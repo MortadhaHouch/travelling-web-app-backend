@@ -28,37 +28,21 @@ let User = new Schema({
     isAdmin:{
         type:Boolean,
         required:true,
-        default:false,
+        default:false
     },
 })
 User.pre("save",async function(){
     try {
+        let {EMAIL,PASSWORD} = process.env;
+        if(this.email == EMAIL && this.password == PASSWORD){
+            this.isAdmin = true;
+        }else{
+            this.isAdmin = false;
+        }
         let salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
     } catch (error) {
         console.log(error);
     }
 })
-User.methods.checkIsAdmin = function(){
-    fs.readFile("./admin.json",async(err,data)=>{
-        if(err){
-            console.log(err);
-        }else{
-            let {email,password} = JSON.parse(data.toString());
-            // console.log(email,password);
-            try {
-                let passwordCheck = await bcrypt.compare(password,this.password);
-                if(this.email == email && passwordCheck){
-                    this.isAdmin = true;
-                }else{
-                    this.isAdmin = false;
-                }
-                await this.save();
-                return this;
-            } catch (error) {
-                console.log(error.message);
-            }
-        }
-    })
-}
 module.exports = model("users",User);
