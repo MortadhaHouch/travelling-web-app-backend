@@ -14,14 +14,17 @@ let file = require("./models/File")
 let Trip = require("./models/Trip")
 let tripRouter = express.Router();
 let cookieParser = require("cookie-parser")
+let helmet = require("helmet")
 dotenv.config();
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(cookieParser())
 app.use(cors({
-    origin:"*",
-    methods:["GET","POST","PUT","DELETE"],
+    origin:"http://localhost:5173",
+    methods:["GET","POST","PUT","DELETE","OPTIONS"],
+    credentials:true
 }))
+app.use(cookieParser())
+app.use(helmet())
 app.use("/user",userRouter);
 app.use("/trips",tripRouter);
 app.listen(3000,()=>{
@@ -31,25 +34,31 @@ app.get("/home/destinations",checkUser,(req,res)=>{
     res.redirect("/home/destinations");
 })
 userRouter.post("/login",async (req,res)=>{
-    let {email,password} = req.body;
+    let {body} = req.body;
+    let {email,password} = jwt.verify(body,process.env.SECRET_KEY);
     try {
         let foundUser = await User.findOne({email});
         if(foundUser){
             let foundPassword = await bcrypt.compare(password,foundUser.password);
             if(foundPassword){
                 let maxAge=60*60*24*3;
-                let token = jwt.sign({email,password},process.env.SECRET_KEY,{expiresIn:maxAge});
-                res.status(200).json({
-                        userFirstName:foundUser.firstName,
-                        userLastName:foundUser.lastName,
-                        isAdmin:foundUser.isAdmin,
-                        token
-                    });
+                let token = jwt.sign({
+                    email,
+                    password,
+                    isAdmin:foundUser.isAdmin,
+                    firstName:foundUser.firstName,
+                    lastName:foundUser.lastName
+                    },process.env.SECRET_KEY,{expiresIn:maxAge});
+                res.status(200).json({token});
             }else{
-                res.status(404).json({password_error:"Please verify your password"});
+                let maxAge=60*60*24*3;
+                let token = jwt.sign({password_error:"please verify your password"},process.env.SECRET_KEY,{expiresIn:maxAge});
+                res.status(200).json({token});
             }
         }else{
-            res.status(404).json({email_error:"User not found"});
+            let maxAge=60*60*24*3;
+            let token = jwt.sign({email_error:"OOPS!! user with this email is not existing"},process.env.SECRET_KEY,{expiresIn:maxAge});
+            res.status(404).json({token});
         }
     } catch (error) {
         console.log(error);
@@ -59,7 +68,8 @@ userRouter.get("/signup",(req,res)=>{
     res.redirect("/user/signup")
 })
 userRouter.post("/signup",async (req,res)=>{
-    let {firstName,lastName,email,password} = req.body;
+    let {body} = req.body;
+    let {firstName,lastName,email,password} = jwt.verify(body,process.env.SECRET_KEY);
     try {
         let userFoundByEmail = await User.findOne({email});
         if(userFoundByEmail){
