@@ -1,7 +1,7 @@
 let mongoose = require("mongoose");
 let dotenv = require("dotenv");
 dotenv.config();
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_COMPASS_URI;
 let client;
 async function run() {
     try {

@@ -15,6 +15,14 @@ let User = new Schema({
         required:true,
         lowercase:true
     },
+    isMale:{
+        type:Boolean,
+        required:true
+    },
+    avatar:{
+        type:Schema.Types.ObjectId,
+        required:true
+    },
     email:{
         type:String,
         required:true,
@@ -29,6 +37,25 @@ let User = new Schema({
         type:Boolean,
         required:true,
         default:false
+    },
+    dateOfBirth:{
+        type:String,
+        required:true
+    },
+    likedTrips:{
+        type:[Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
+    savedTrips:{
+        type: [Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
+    addedOn:{
+        default:Date.now().toString(),
+        type:String,
+        required:true
     },
 })
 User.pre("save",async function(){

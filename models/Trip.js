@@ -2,16 +2,53 @@ let {Schema,model} = require("mongoose");
 let trip = new Schema({
     destination:{
         type:String,
-        required:true
+        required:true,
+        unique:true
+    },
+    description:{
+        required:true,
+        type:String
     },
     participators:{
         type:[Schema.Types.ObjectId],
+        default:[],
+        required:true
+    },
+    price:{
+        type:Number,
+        required:true
+    },
+    maxNumberOfParticipators:{
+        type:Number,
+        required:true,
+        default:50
+    },
+    period:{
+        type:Number,
+        required:true
+    },
+    date:{
+        type:String,
         required:true
     },
     isCancelled:{
         type:Boolean,
         required:true,
         default:false
+    },
+    images:{
+        type:[Schema.Types.ObjectId],
+        required:true
+    },
+    numberOfLikes:{
+        type:Number,
+        required:true,
+        default:0
+    },
+    numberOfSaves:{
+        type:Number,
+        required:true,
+        default:0
     }
 })
 module.exports = model("trip",trip)

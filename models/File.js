@@ -7,20 +7,6 @@ let destinationSchema = new Schema({
     path:{
         type:String,
         required:true
-    },
-    isFavorite:{
-        type:Boolean,
-        required:true,
-        default:false
-    },
-    numberOfLikes:{
-        type:Number,
-        required:true,
-        default:0
-    },
-    tag:{
-        type:String,
-        required:true
     }
 })
 module.exports = model("file",destinationSchema);

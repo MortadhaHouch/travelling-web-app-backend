@@ -7,10 +7,11 @@ async function checkUser(req,res,next){
         if(!req.cookies.json_token){
             res.redirect("/login");
         }else{
-            let userData = jwt.verify(req.body.json_token,process.env.SECRET_KEY);
+            let userData = jwt.verify((req.body.json_token || req.cookies.json_token),process.env.SECRET_KEY);
             let foundUser = await user.findOne({email:userData.email});
             let userName = `${foundUser.firstName}_${foundUser.lastName}`;
-            res.status(200).json({user:foundUser,userName})
+            // res.status(200).json({user:foundUser,userName})
+            console.log({user:foundUser,userName});
         }
         next()
     } catch (error){
