@@ -12,6 +12,31 @@ let faqSchema = new Schema({
     sender:{
         type:Schema.Types.ObjectId,
         required:true
-    }
+    },
+    numberOfLikes:{
+        type:Number,
+        required:true,
+        default:0
+    },
+    numberOfDislikes:{
+        type:Number,
+        required:true,
+        default:0
+    },
+    isLiked:{
+        type:Boolean,
+        default:false,
+        required:true
+    },
+    isVisibleByOthers:{
+        type:Boolean,
+        default:true,
+        required:true
+    },
+    addedOn:{
+        default:Date.now().toString(),
+        type:String,
+        required:true
+    },
 })
 module.exports = model("Faq",faqSchema)

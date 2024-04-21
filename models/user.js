@@ -47,6 +47,11 @@ let User = new Schema({
         required:true,
         default:[]
     },
+    dislikedTrips:{
+        type:[Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
     savedTrips:{
         type: [Schema.Types.ObjectId],
         required:true,
@@ -57,6 +62,16 @@ let User = new Schema({
         type:String,
         required:true
     },
+    isLoggedIn:{
+        type:Boolean,
+        required:true,
+        default:false
+    },
+    plannedTrips:{
+        type: [Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    }
 })
 User.pre("save",async function(){
     try {

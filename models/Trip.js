@@ -45,6 +45,11 @@ let trip = new Schema({
         required:true,
         default:0
     },
+    numberOfDisLikes:{
+        type:Number,
+        required:true,
+        default:0
+    },
     numberOfSaves:{
         type:Number,
         required:true,
