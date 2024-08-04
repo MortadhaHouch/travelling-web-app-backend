@@ -18,11 +18,6 @@ let feedbackSchema = new Schema({
         required:true,
         default:0
     },
-    isLiked:{
-        type:Boolean,
-        default:false,
-        required:true
-    },
     isVisibleByOthers:{
         type:Boolean,
         default:true,

@@ -31,12 +31,13 @@ let User = new Schema({
     },
     password:{
         type:String,
-        required:true,
+        required:true
     },
     isAdmin:{
         type:Boolean,
         required:true,
-        default:false
+        default:false,
+        immutable:true
     },
     dateOfBirth:{
         type:String,
@@ -57,6 +58,41 @@ let User = new Schema({
         required:true,
         default:[]
     },
+    plannedTrips:{
+        type: [Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
+    likedFeedbacks:{
+        type:[Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
+    dislikedFeedbacks:{
+        type:[Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
+    savedFeedbacks:{
+        type: [Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
+    likedFaqs:{
+        type:[Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
+    dislikedFaqs:{
+        type:[Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
+    savedFaqs:{
+        type: [Schema.Types.ObjectId],
+        required:true,
+        default:[]
+    },
     addedOn:{
         default:Date.now().toString(),
         type:String,
@@ -67,24 +103,29 @@ let User = new Schema({
         required:true,
         default:false
     },
-    plannedTrips:{
-        type: [Schema.Types.ObjectId],
+    currentLoginIpAddress:{
+        type:String,
         required:true,
-        default:[]
+        default:""
+    },
+    isPrivate:{
+        type:Boolean,
+        required:true,
+        default:false
     }
 })
-User.pre("save",async function(){
+User.pre("save", async function(next){
     try {
-        let {EMAIL,PASSWORD} = process.env;
-        if(this.email == EMAIL && this.password == PASSWORD){
-            this.isAdmin = true;
-        }else{
-            this.isAdmin = false;
+        const isAdminEmail = (this.email === process.env.EMAIL);
+        this.isAdmin = isAdminEmail;
+        if (!this.isModified('password')) {
+            const salt = await bcrypt.genSalt(10);
+            this.password = await bcrypt.hash(this.password, salt);
         }
-        let salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+        next();
     } catch (error) {
-        console.log(error);
+        console.error('Error while saving user:', error.message);
+        next(error);
     }
-})
+});
 module.exports = model("users",User);
